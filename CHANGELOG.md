@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 (2026-09-23)
+
+- The key file is also found in `~/.config/gatekeeper/env` when `XDG_CONFIG_HOME` points elsewhere, as it does inside a Flatpak editor such as VS Code. Before, hooks in those sessions could not find the key and failed open.
+
 ## 0.2.1 (2026-09-23)
 
 Audit fixes (security, docs, coverage). Tests in `tests/test_audit_security.py` and `tests/test_audit_coverage.py`.

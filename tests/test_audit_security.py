@@ -91,3 +91,12 @@ def test_hook_argument_errors_never_exit_2(args, tmp_path):
     done = subprocess.run([sys.executable, str(REPO / "bin" / "gatekeeper"), "hook", "user-prompt", *args],
                           input='{"prompt": "hi"}', capture_output=True, text=True, env=env, timeout=30)
     assert done.returncode == 0 and done.stdout == ""
+
+
+def test_key_found_in_home_config_when_xdg_points_into_a_sandbox(tmp_path, monkeypatch):
+    monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "sandbox" / "config"))
+    (tmp_path / "home" / ".config" / "gatekeeper").mkdir(parents=True)
+    (tmp_path / "home" / ".config" / "gatekeeper" / "env").write_text("TYPESAFE_API_KEY=from-home\n")
+    assert jev.load_key() == "from-home"

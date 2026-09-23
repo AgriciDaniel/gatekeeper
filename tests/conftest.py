@@ -36,6 +36,9 @@ def isolated(tmp_path, monkeypatch):
     monkeypatch.setenv("GATEKEEPER_LOCAL", str(tmp_path / "local-gates"))
     monkeypatch.delenv("GATEKEEPER_ENV_FILE", raising=False)
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
+    import site
+    monkeypatch.setenv("PYTHONUSERBASE", site.getuserbase())  # child Pythons keep finding user-installed packages
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))  # ~/.config is also a key location
     return tmp_path
 
 

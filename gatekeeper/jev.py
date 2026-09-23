@@ -49,8 +49,14 @@ def env_files() -> list[Path]:
     link exposes the repo folder under ~/.claude/skills, so a key file there travels
     with anything that copies skills."""
     files = [Path(os.environ["GATEKEEPER_ENV_FILE"]).expanduser()] if os.environ.get("GATEKEEPER_ENV_FILE") else []
-    config = Path(os.environ.get("XDG_CONFIG_HOME") or "~/.config").expanduser()
-    return files + [config / "gatekeeper" / "env"]
+    # Sandboxed apps (a Flatpak editor, for example) point XDG_CONFIG_HOME inside
+    # their sandbox, so ~/.config is always checked too.
+    for config in (os.environ.get("XDG_CONFIG_HOME"), "~/.config"):
+        if config:
+            path = Path(config).expanduser() / "gatekeeper" / "env"
+            if path not in files:
+                files.append(path)
+    return files
 
 
 def _read_key(env_file: Path) -> str | None:

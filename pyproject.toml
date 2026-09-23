@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gatekeeper"
-version = "0.2.1"
+version = "0.2.2"
 description = "Rule-driven decision gates: YAML rulebooks, deterministic rules, and Jev typed judgments with confidence bands."
 readme = "README.md"
 license = "MIT"
