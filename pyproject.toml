@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gatekeeper"
 version = "0.2.2"
-description = "Rule-driven decision gates: YAML rulebooks, deterministic rules, and Jev typed judgments with confidence bands."
+description = "Routes each request to the right AI agent or skill: YAML rules decide what code can, Jev (TypeSafe) makes the typed call with a confidence."
 readme = "README.md"
 license = "MIT"
 authors = [{name = "Agrici Daniel"}]

@@ -1,14 +1,16 @@
 <a name="gatekeeper"></a>
 
-# ![Gatekeeper: routes each Claude Code prompt to the right agent or skill, judged by Jev](docs/assets/banner.svg)
+# ![Gatekeeper: routes each request to the right AI agent or skill, judged by Jev](docs/assets/banner.svg)
 
-[![version](https://img.shields.io/badge/version-0.2.1-d45bb6?style=flat-square&labelColor=0b0b0b)](CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-0.2.2-d45bb6?style=flat-square&labelColor=0b0b0b)](CHANGELOG.md)
 [![checks](https://github.com/AgriciDaniel/gatekeeper/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AgriciDaniel/gatekeeper/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-666666?style=flat-square&labelColor=0b0b0b)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.11%2B-666666?style=flat-square&labelColor=0b0b0b)](pyproject.toml)
 [![jev](https://img.shields.io/badge/judged%20by-jev--1.13.0-d45bb6?style=flat-square&labelColor=0b0b0b)](https://docs.typesafe.ai/primitives)
 
-**Gatekeeper decides which agent or skill should handle your Claude Code prompt, before Claude picks one.** It runs as a Claude Code hook. Each decision costs a fraction of a cent and takes about half a second.
+**Gatekeeper decides which AI agent or skill should handle a request, before your AI picks one.** Commands you type go straight through; the plain requests, where the AI would otherwise guess, get checked by your rules and judged by Jev. Each decision costs a fraction of a cent and takes about half a second.
+
+The engine and rulebooks are tool-neutral. Today it installs as a Claude Code hook.
 
 <p align="left"><img src="docs/assets/router.svg" alt="The router: your rules narrow the options, Jev makes a typed call, and the verdict routes, blocks, asks the user or lets the prompt through" width="880"></p>
 
