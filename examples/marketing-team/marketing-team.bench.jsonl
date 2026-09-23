@@ -1,0 +1,20 @@
+{"id": "mt-001", "prompt": "fix the canonical tags and redirect chains on our docs site", "project": "acme-marketing", "expect": "technical-seo-audit", "label_source": "example"}
+{"id": "mt-002", "prompt": "which keywords should our pricing guide target", "project": "acme-marketing", "expect": "keyword-research", "label_source": "example"}
+{"id": "mt-003", "prompt": "does chatgpt ever recommend us when people ask for a crm", "project": "acme-marketing", "expect": "ai-search-visibility", "label_source": "example"}
+{"id": "mt-004", "prompt": "write a 1500 word article on onboarding checklists with sources", "project": "acme-marketing", "expect": "blog-post", "label_source": "example"}
+{"id": "mt-005", "prompt": "plan next quarter's posts, two a week", "project": "acme-marketing", "expect": "content-calendar", "label_source": "example"}
+{"id": "mt-006", "prompt": "our google ads cpc doubled, find the waste", "project": "acme-marketing", "expect": "ad-account-audit", "label_source": "example"}
+{"id": "mt-007", "prompt": "set up a linkedin ads campaign for cfos", "project": "acme-marketing", "expect": "paid-social-ads", "label_source": "example"}
+{"id": "mt-008", "prompt": "turn this podcast quote into a linkedin post and an x thread", "project": "acme-marketing", "expect": "social-posts", "label_source": "example"}
+{"id": "mt-009", "prompt": "write a 5 email welcome sequence for trial users", "project": "acme-marketing", "expect": "email-sequence", "label_source": "example"}
+{"id": "mt-010", "prompt": "script a 60 second short about our new feature", "project": "acme-marketing", "expect": "video-script", "label_source": "example"}
+{"id": "mt-011", "prompt": "make a thumbnail brief for tomorrow's video", "project": "acme-marketing", "expect": "image-brief", "label_source": "example"}
+{"id": "mt-012", "prompt": "summarize last month's traffic and conversions", "project": "acme-marketing", "expect": "dashboard-report", "label_source": "example"}
+{"id": "mt-013", "prompt": "is a 2% lift on the signup button real, how long do we run it", "project": "acme-marketing", "expect": "ab-test-plan", "label_source": "example"}
+{"id": "mt-014", "prompt": "rewrite the hero and pricing section of the landing page", "project": "acme-marketing", "expect": "landing-page", "label_source": "example"}
+{"id": "mt-015", "prompt": "why do people drop off at checkout", "project": "acme-marketing", "expect": "conversion-audit", "label_source": "example"}
+{"id": "mt-016", "prompt": "how are our three main competitors pricing and positioning", "project": "acme-marketing", "expect": "competitor-scan", "label_source": "example"}
+{"id": "mt-017", "prompt": "what makes us different from the big suites, write it down", "project": "acme-marketing", "expect": "positioning", "label_source": "example"}
+{"id": "mt-018", "prompt": "plan the launch of v2 across email, social and ads", "project": "acme-marketing", "expect": "launch-plan", "label_source": "example"}
+{"id": "mt-019", "prompt": "rename this python variable across the repo", "project": "acme-marketing", "expect": "not_marketing", "label_source": "example"}
+{"id": "mt-020", "prompt": "git rebase onto main and fix the conflicts", "project": "acme-marketing", "expect": "not_marketing", "label_source": "example"}

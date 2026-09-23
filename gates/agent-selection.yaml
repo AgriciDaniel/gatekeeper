@@ -1,0 +1,163 @@
+# Gatekeeper starter rulebook: which Claude Code agent or skill handles a prompt.
+#
+# It works on any setup: the roster is read from what you have installed
+# (~/.claude/agents, ~/.claude/skills, enabled plugins). Make it yours by
+# copying this file to gates/local/agent-selection.yaml (git-ignored, loaded
+# first) and adding candidate rules and families for your own specialists.
+#
+# Flow: hard_rules (code) -> judgments (one Jev request) -> decide (first match).
+# Every threshold in `bands` is an untuned starting value taken from the
+# documented illustrations (docs.typesafe.ai/confidence,
+# docs.typesafe.ai/patterns/confidence-routing). Replace them with numbers
+# from `gatekeeper bench agent-selection` once you have reviewed labels.
+
+gate: agent-selection
+version: 1
+description: Route each Claude Code prompt to the right installed agent or skill, or leave it with the main thread.
+model: jev-1.13.0   # pinned: thresholds are tuned per model version, and jev-latest can move
+mode: shadow        # shadow | advise | enforce | off.  Change with: gatekeeper mode agent-selection enforce (saved in gates/local/modes.json)
+fail: open          # Jev down or slow -> allow and log. Routing must never stall a session.
+timeout_s: 4
+
+state:
+  fields: [prompt, project]   # project = folder name of the session's cwd
+  max_chars: 6000
+
+roster:
+  sources: [user_agents, user_skills, plugin_agents, plugin_skills]
+  description_chars: 280
+  builtin:
+    claude-code-guide: Answers questions about Claude Code, the Claude Agent SDK, and the Claude API.
+  # Leaves reached through their hub, and helpers that never own a request.
+  # A Choice holds at most 255 options: exclude leaves if your roster is large.
+  exclude:
+    - "codex:*"
+  keep: []
+
+# A call inside the routed handler's family is never blocked, so a hub can use
+# its own leaves. Names not listed here are a family of one. Example:
+#   blog: ["blog", "blog-*"]
+families: {}
+
+# Helpers any handler may use. Never blocked except by an explicit forbid.
+# These are Claude Code's own agents and skills; add your cross-cutting tools.
+neutral:
+  - general-purpose
+  - Explore
+  - Plan
+  - fork
+  - claude-code-guide
+  - statusline-setup
+  - "artifact-*"
+  - dataviz
+  - workflow-authoring
+  - claude-api
+  - code-review
+  - security-review
+  - simplify
+  - update-config
+  - keybindings-help
+  - fewer-permission-prompts
+  - loop
+  - schedule
+  - init
+  - run
+  - claude-in-chrome
+  - "anthropic-skills:*"
+  - "codex:*"
+
+# Prompts the harness writes, not the user: background agent results, task
+# notifications, system reminders. They are not judged and they leave this
+# turn's verdict in place, so a subagent's report can never re-route the turn.
+passthrough:
+  - {field: prompt, matches: '^\s*<(agent-message|task-notification|system-reminder|local-command-stdout|local-command-stderr|command-name|command-message|bash-input|bash-stdout|bash-stderr)\b'}
+  - {field: prompt, matches: '^\s*\[SYSTEM NOTIFICATION'}
+
+hard_rules:
+  # Stop rules: decided by code, no Jev call.
+  - id: explicit-command
+    note: A slash command or shell escape already names its handler.
+    when: {field: prompt, matches: '^\s*[/!]'}
+    verdict: allow
+  - id: short-reply
+    note: 'Pure acknowledgements carry no routing signal. Other short prompts ("deploy to prod") are still judged.'
+    when: {field: prompt, matches: '(?i)^\s*(y|yes|yeah|yep|ok|okay|k|sure|go|go on|go ahead|continue|carry on|proceed|next|do it|sounds good|lgtm|thanks|thank you|thx|no|nope|stop)[\s.!]*$'}
+    verdict: allow
+
+  # Candidate rules narrow the Choice to named handlers (union of all that fire),
+  # and forbid rules take a handler off the table. Examples:
+  #
+  # - id: blog
+  #   when: {field: prompt, matches: '(?i)\bblog\b'}
+  #   candidates: [blog]
+  # - id: no-deploys-from-docs
+  #   when: {field: project, equals: docs}
+  #   forbid: [deploy-agent]
+
+judgments:
+  target:
+    type: choice
+    instructions: >-
+      Which handler owns the topic of the user's request in `prompt`? `project` is
+      the folder the user is working in. Pick the specialist whose domain covers the
+      request, even when the request is a simple question. Pick main_thread only
+      when no listed specialist's domain covers it.
+    options: roster
+    narrow_to_candidates: true
+    escape:
+      main_thread: No listed specialist owns this topic. General programming, file edits, shell tasks, git, or conversation that none of the other options covers.
+    bands: {act: 0.85, confirm: 0.60}
+  outside_action:
+    type: noul
+    instructions: >-
+      Does `prompt` ask for an action that leaves this computer or cannot be
+      undone: sending a message or email, publishing or posting, deploying,
+      spending money, deleting data, or changing an account?
+    criteria:
+      "true": The request asks to send, publish, post, deploy, buy, delete, or change an account
+      "false": The request is about reading, writing local files, planning, or answering
+    bands: {"yes": 0.70, "no": 0.30}
+
+decide:
+  # Outside actions come first: they matter most for main-thread work (push, deploy, delete).
+  - id: outside-action
+    when:
+      all:
+        - {judgment: outside_action, band: "yes"}
+        - {judgment: target, choice_is_escape: false}
+    verdict: confirm
+    target: "{target.choice}"
+    message: >-
+      this request asks for an action that leaves this computer or cannot be undone
+      (p={outside_action.noul}). Confirm the exact target and impact with the user
+      before doing it. Suggested handler: `{target.choice}` ({target.band}).
+  - id: outside-action-main
+    when: {judgment: outside_action, band: "yes"}
+    verdict: confirm
+    message: >-
+      this request asks for an action that leaves this computer or cannot be undone
+      (p={outside_action.noul}). Confirm the exact target and impact with the user
+      before doing it.
+  - id: main-thread
+    when: {judgment: target, choice_is_escape: true}
+    verdict: allow
+  - id: route
+    when: {judgment: target, band: act}
+    verdict: route
+    target: "{target.choice}"
+    message: >-
+      route this request to `{target.choice}` (confidence {target.confidence}, act band).
+      In enforce mode, delegating to a specialist outside that family is denied this turn.
+  - id: suggest
+    when: {judgment: target, band: confirm}
+    verdict: suggest
+    target: "{target.choice}"
+    message: >-
+      `{target.choice}` looks like the right handler (confidence {target.confidence},
+      confirm band; top picks: {target.alternatives}). Use it unless the request
+      clearly needs something else.
+  - id: escalate
+    verdict: escalate
+    message: >-
+      unsure who should handle this ({target.alternatives}). Ask the user which agent
+      or skill to use before delegating.

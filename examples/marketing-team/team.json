@@ -1,0 +1,196 @@
+{
+  "skills": [
+    {
+      "id": "positioning",
+      "role": "strategy",
+      "description": "Write a positioning statement: audience, problem, alternative, and why this product wins.",
+      "use_when": "The offer, audience, or differentiation is unclear or being redefined.",
+      "path": "skills/positioning/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "brand-voice",
+      "role": "strategy",
+      "description": "Define a brand voice guide with tone rules, example lines, and phrases to avoid.",
+      "use_when": "Copy sounds inconsistent or a voice guide is needed.",
+      "path": "skills/brand-voice/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "launch-plan",
+      "role": "strategy",
+      "description": "Plan a product or feature launch across channels with dates, owners, and success metrics.",
+      "use_when": "A launch, release, or campaign needs a dated plan.",
+      "path": "skills/launch-plan/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "competitor-scan",
+      "role": "research",
+      "description": "Compare competitors' offers, pricing, messaging, and channels from public pages.",
+      "use_when": "Someone asks how competitors position, price, or market.",
+      "path": "skills/competitor-scan/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "customer-interviews",
+      "role": "research",
+      "description": "Design interview questions and synthesize customer quotes into themes and objections.",
+      "use_when": "Customer research, interviews, or voice-of-customer analysis is needed.",
+      "path": "skills/customer-interviews/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "keyword-research",
+      "role": "seo",
+      "description": "Find and cluster search keywords by intent, volume, and difficulty.",
+      "use_when": "Choosing topics or keywords to target in search.",
+      "path": "skills/keyword-research/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "technical-seo-audit",
+      "role": "seo",
+      "description": "Audit crawlability, indexing, redirects, canonicals, structured data, and page speed.",
+      "use_when": "A site has search visibility or indexing problems.",
+      "path": "skills/technical-seo-audit/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "ai-search-visibility",
+      "role": "seo",
+      "description": "Check whether AI assistants and AI Overviews cite a brand, and how to earn citations.",
+      "use_when": "The question is about ChatGPT, Perplexity, AI Overviews, or generative engine optimization.",
+      "path": "skills/ai-search-visibility/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "blog-post",
+      "role": "content",
+      "description": "Write a sourced, search-optimized blog article from a topic or brief.",
+      "use_when": "A full article or blog draft is requested.",
+      "path": "skills/blog-post/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "content-calendar",
+      "role": "content",
+      "description": "Plan a publishing calendar across topics, formats, and dates.",
+      "use_when": "Planning what content to publish and when.",
+      "path": "skills/content-calendar/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "case-study",
+      "role": "content",
+      "description": "Turn a customer result into a structured case study with evidence.",
+      "use_when": "A customer story or proof piece is needed.",
+      "path": "skills/case-study/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "search-ads",
+      "role": "ads",
+      "description": "Build and optimize search ad campaigns: keywords, match types, ad copy, bidding.",
+      "use_when": "Google Ads or Microsoft Ads search campaigns.",
+      "path": "skills/search-ads/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "paid-social-ads",
+      "role": "ads",
+      "description": "Plan and write paid social campaigns for Meta, LinkedIn, or TikTok with audiences and creative angles.",
+      "use_when": "Paid campaigns on social platforms.",
+      "path": "skills/paid-social-ads/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "ad-account-audit",
+      "role": "ads",
+      "description": "Audit an ad account for wasted spend, tracking gaps, and structure problems.",
+      "use_when": "Ad performance is poor or an account needs a review.",
+      "path": "skills/ad-account-audit/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "social-posts",
+      "role": "social",
+      "description": "Write platform-native social posts and threads from a source idea.",
+      "use_when": "Organic posts for LinkedIn, X, Instagram, or similar.",
+      "path": "skills/social-posts/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "community-plan",
+      "role": "social",
+      "description": "Plan community engagement, rituals, and moderation for a group or forum.",
+      "use_when": "Running or growing an online community.",
+      "path": "skills/community-plan/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "email-sequence",
+      "role": "email",
+      "description": "Write an email sequence (welcome, nurture, launch, win-back) with timing and goals.",
+      "use_when": "Email campaigns, newsletters, or lifecycle automation.",
+      "path": "skills/email-sequence/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "video-script",
+      "role": "creative",
+      "description": "Script a short or long video with hook, beats, and call to action.",
+      "use_when": "A YouTube video, reel, or short needs a script.",
+      "path": "skills/video-script/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "image-brief",
+      "role": "creative",
+      "description": "Write a creative brief or image prompt for ads, thumbnails, or social visuals.",
+      "use_when": "Visual assets, thumbnails, or image generation are needed.",
+      "path": "skills/image-brief/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "dashboard-report",
+      "role": "analytics",
+      "description": "Build a performance report from analytics or ad data with trends and next actions.",
+      "use_when": "Reporting on traffic, conversions, or campaign results.",
+      "path": "skills/dashboard-report/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "ab-test-plan",
+      "role": "analytics",
+      "description": "Design an experiment with hypothesis, metric, sample size, and guardrails.",
+      "use_when": "Planning an A/B test or measuring a change.",
+      "path": "skills/ab-test-plan/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "landing-page",
+      "role": "web",
+      "description": "Write and structure a conversion-focused landing page.",
+      "use_when": "A landing page, sales page, or signup page is being created or rewritten.",
+      "path": "skills/landing-page/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "conversion-audit",
+      "role": "web",
+      "description": "Audit a page or funnel for friction, trust gaps, and conversion blockers.",
+      "use_when": "A page or funnel converts poorly.",
+      "path": "skills/conversion-audit/SKILL.md",
+      "status": "active"
+    },
+    {
+      "id": "marketing-workflow",
+      "role": "workflow",
+      "description": "Run several skills in order with review gates, from brief to published asset.",
+      "use_when": "The outcome needs research, writing, review, and publishing in sequence.",
+      "path": "skills/marketing-workflow/SKILL.md",
+      "status": "active"
+    }
+  ]
+}

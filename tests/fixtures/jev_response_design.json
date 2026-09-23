@@ -1,0 +1,1 @@
+{"model":"jev-1.13.0","answers":{"t":{"type":"choice","choice":"design-agent","confidence":1.0,"probabilities":{"code-agent":0.0,"design-agent":1.0,"main_thread":0.0}},"o":{"type":"noul","noul":0.03}},"usage":{"input_tokens":372,"output_tokens":67}}

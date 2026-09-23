@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security issue
+    url: https://github.com/AgriciDaniel/gatekeeper/security/advisories/new
+    about: Report security problems privately here.

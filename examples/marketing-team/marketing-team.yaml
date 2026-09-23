@@ -1,0 +1,102 @@
+# Example gate: route marketing requests to a team of Markdown skills.
+#
+# The roster is not Claude Code agents. It is team.json, a list of skills,
+# each owned by a role (strategy, seo, ads, ...). The host does not spawn a
+# subagent: it reads the chosen skill's SKILL.md and follows it. So this gate
+# runs in `advise` mode: it adds the route as context and never blocks.
+#
+# One Jev Choice picks the exact skill. When no single skill is confident,
+# `rollup: group` adds up the probabilities by role, so the gate can still say
+# "this is SEO work" and let the host pick the narrowest SEO skill. This is the
+# hierarchical classification pattern: the fine label from Jev, the coarse one
+# derived in code.
+#
+#   gatekeeper judge marketing-team "our google ads cpc doubled, find the waste"
+#   gatekeeper bench marketing-team
+
+gate: marketing-team
+version: 1
+description: Route a marketing request to the narrowest skill in team.json, or to its role when the skill is unclear.
+model: jev-1.13.0
+mode: advise
+fail: open
+timeout_s: 4
+
+state:
+  fields: [prompt, project]
+  max_chars: 6000
+
+roster:
+  sources: [index]
+  description_chars: 280
+  index:
+    file: team.json            # relative to this rulebook
+    collections: [skills]
+    name: id
+    description: [description, use_when]
+    group: role
+    path: path
+    where: {status: active}
+
+passthrough:
+  - {field: prompt, matches: '^\s*<(agent-message|task-notification|system-reminder|local-command-stdout|local-command-stderr|command-name|command-message|bash-input|bash-stdout|bash-stderr)\b'}
+  - {field: prompt, matches: '^\s*\[SYSTEM NOTIFICATION'}
+
+hard_rules:
+  - id: explicit-command
+    when: {field: prompt, matches: '^\s*[/!]'}
+    verdict: allow
+  - id: short-reply
+    when: {field: prompt, matches: '(?i)^\s*(y|yes|yeah|yep|ok|okay|k|sure|go|go on|go ahead|continue|proceed|next|do it|sounds good|lgtm|thanks|thank you|thx|no|nope|stop)[\s.!]*$'}
+    verdict: allow
+
+judgments:
+  skill:
+    type: choice
+    instructions: >-
+      Which marketing skill should handle the user's request in `prompt`? Pick the
+      narrowest skill whose description and "use when" fit. Pick not_marketing only
+      when the request is not marketing work at all.
+    options: roster
+    rollup: group
+    escape:
+      not_marketing: Not a marketing task. Programming, file edits, shell or git work, or general conversation.
+    bands: {act: 0.80, confirm: 0.55}
+
+decide:
+  - id: not-marketing
+    when: {judgment: skill, choice_is_escape: true}
+    verdict: allow
+  - id: skill
+    when: {judgment: skill, band: act}
+    verdict: route
+    target: "{skill.choice}"
+    message: >-
+      route: `{skill.choice}` ({skill.group} role, confidence {skill.confidence}).
+      Read `{skill.path}` and follow it.
+  - id: role
+    when: {judgment: skill, group_band: act}
+    verdict: suggest
+    target: "{skill.group_choice}"
+    message: >-
+      this is {skill.group_choice} work (confidence {skill.group_confidence}), but the
+      exact skill is unclear ({skill.alternatives}). Pick the narrowest
+      {skill.group_choice} skill whose "use when" fits, and say which one you chose.
+  - id: suggest
+    when: {judgment: skill, band: confirm}
+    verdict: suggest
+    target: "{skill.choice}"
+    message: >-
+      `{skill.choice}` probably fits (confidence {skill.confidence}; top picks:
+      {skill.alternatives}). Read `{skill.path}` unless the request clearly needs another skill.
+  - id: escalate
+    verdict: escalate
+    message: >-
+      unsure which skill or role owns this ({skill.group_alternatives}). Ask the user
+      what outcome they want before picking a skill.
+
+bench:
+  file: marketing-team.bench.jsonl
+  judgment: skill
+  target_precision: 0.9
+  min_rows: 10

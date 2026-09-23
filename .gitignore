@@ -1,0 +1,12 @@
+.gatekeeper/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.coverage
+
+# private rulebooks and their benches (see gates/local in README)
+gates/local/
+# hooks are installed per machine by scripts/install_hooks.py
+.claude/settings.json
+*.egg-info/

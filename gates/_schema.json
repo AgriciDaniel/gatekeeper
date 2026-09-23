@@ -1,0 +1,427 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gatekeeper rulebook",
+  "type": "object",
+  "required": [
+    "gate",
+    "version",
+    "model",
+    "mode",
+    "fail",
+    "state",
+    "decide"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "gate": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "shadow",
+        "advise",
+        "enforce",
+        "off"
+      ]
+    },
+    "fail": {
+      "enum": [
+        "open",
+        "closed"
+      ]
+    },
+    "timeout_s": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 30
+    },
+    "state": {
+      "type": "object",
+      "required": [
+        "fields"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "max_chars": {
+          "type": "integer",
+          "minimum": 100
+        }
+      }
+    },
+    "roster": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "user_agents",
+              "user_skills",
+              "plugin_agents",
+              "plugin_skills",
+              "index"
+            ]
+          }
+        },
+        "builtin": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keep": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description_chars": {
+          "type": "integer",
+          "minimum": 40
+        },
+        "index": {
+          "type": "object",
+          "required": [
+            "file"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "file": {
+              "type": "string",
+              "description": "JSON file: a list of entries, or an object whose `collections` keys hold lists"
+            },
+            "collections": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": {
+              "type": "string",
+              "description": "field holding the handler name (default id)"
+            },
+            "description": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "fields joined into the option description"
+            },
+            "group": {
+              "type": "string",
+              "description": "field naming the entry's group, for rollup"
+            },
+            "path": {
+              "type": "string",
+              "description": "field holding the file the host should read"
+            },
+            "where": {
+              "type": "object",
+              "description": "keep only entries whose fields equal these values"
+            }
+          }
+        }
+      }
+    },
+    "passthrough": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/predicate"
+      }
+    },
+    "families": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "neutral": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hard_rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "when"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "when": {
+            "$ref": "#/$defs/predicate"
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "forbid": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "verdict": {
+            "enum": [
+              "allow",
+              "route",
+              "suggest",
+              "confirm",
+              "escalate",
+              "block"
+            ]
+          },
+          "target": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "judgments": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "type",
+          "instructions"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "enum": [
+              "choice",
+              "noul",
+              "score"
+            ]
+          },
+          "instructions": {},
+          "options": {
+            "oneOf": [
+              {
+                "const": "roster"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          },
+          "narrow_to_candidates": {
+            "type": "boolean"
+          },
+          "escape": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "maxProperties": 1
+          },
+          "criteria": {},
+          "bands": {
+            "type": "object"
+          },
+          "rollup": {
+            "const": "group",
+            "description": "also sum Choice probabilities by roster group"
+          }
+        }
+      }
+    },
+    "decide": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "verdict"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "when": {
+            "$ref": "#/$defs/condition"
+          },
+          "verdict": {
+            "enum": [
+              "allow",
+              "route",
+              "suggest",
+              "confirm",
+              "escalate",
+              "block"
+            ]
+          },
+          "target": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "bench": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "judgment": {
+          "type": "string"
+        },
+        "target_precision": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_rows": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  },
+  "$defs": {
+    "predicate": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "all": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/predicate"
+          }
+        },
+        "any": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/predicate"
+          }
+        },
+        "not": {
+          "$ref": "#/$defs/predicate"
+        },
+        "field": {
+          "type": "string"
+        },
+        "matches": {
+          "type": "string"
+        },
+        "equals": {},
+        "in": {
+          "type": "array"
+        },
+        "shorter_than": {
+          "type": "integer"
+        },
+        "longer_than": {
+          "type": "integer"
+        },
+        "exists": {
+          "type": "boolean"
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "all": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
+        },
+        "any": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
+        },
+        "not": {
+          "$ref": "#/$defs/condition"
+        },
+        "rule": {
+          "type": "string"
+        },
+        "judgment": {
+          "type": "string"
+        },
+        "band": {
+          "type": "string"
+        },
+        "band_in": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "choice": {
+          "type": "string"
+        },
+        "choice_in": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "choice_is_escape": {
+          "type": "boolean"
+        },
+        "group_band": {
+          "type": "string"
+        },
+        "group_band_in": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

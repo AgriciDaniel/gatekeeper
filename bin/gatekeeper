@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+"""Run gatekeeper from a checkout without installing it (used by the hooks)."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+if sys.argv[1:2] == ["hook"]:
+    # A hook must never break a session. Exit code 2 would make Claude Code block
+    # the prompt or deny the tool, so every failure here, including a missing
+    # dependency or an argument error from a stale settings.json, exits 0.
+    try:
+        from gatekeeper.cli import main
+
+        main()
+    except BaseException as err:  # noqa: BLE001
+        if not isinstance(err, SystemExit) or err.code not in (0, None):
+            print(f"gatekeeper hook skipped: {type(err).__name__}", file=sys.stderr)
+    sys.exit(0)
+
+from gatekeeper.cli import main  # noqa: E402
+
+sys.exit(main())

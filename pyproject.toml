@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gatekeeper"
+version = "0.2.1"
+description = "Rule-driven decision gates: YAML rulebooks, deterministic rules, and Jev typed judgments with confidence bands."
+readme = "README.md"
+license = "MIT"
+authors = [{name = "Agrici Daniel"}]
+keywords = ["claude-code", "hooks", "routing", "jev", "typesafe", "agents"]
+requires-python = ">=3.11"
+dependencies = ["PyYAML>=6", "jsonschema>=4"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.urls]
+Repository = "https://github.com/AgriciDaniel/gatekeeper"
+
+[project.scripts]
+gatekeeper = "gatekeeper.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools]
+packages = ["gatekeeper"]
