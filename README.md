@@ -97,6 +97,8 @@ A fresh install is in `shadow` mode: it logs what it would do and changes nothin
 | `enforce` | yes | yes | yes |
 | `off` | no | no | no |
 
+Per-project logs: add `--home <folder>` to a `--project` install and that project's hooks log there instead of the shared `.gatekeeper/`.
+
 Kill switch: `GATEKEEPER=off` in the environment, or `bin/gatekeeper mode agent-selection off`. Changing the mode of a shipped rulebook is saved in `gates/local/modes.json`, so your checkout stays clean. Uninstall: the same install command with `--uninstall --apply`. Every write to a settings file makes a backup first.
 
 ## Make it yours

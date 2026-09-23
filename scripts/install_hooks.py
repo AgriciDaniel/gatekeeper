@@ -10,6 +10,7 @@ running it twice adds nothing twice.
   python3 scripts/install_hooks.py --global --apply                          # ~/.claude/settings.json
   python3 scripts/install_hooks.py --project ~/code/some-repo --uninstall --apply
   python3 scripts/install_hooks.py --skill --apply                           # link the /gatekeeper skill
+  python3 scripts/install_hooks.py --project ~/demo --gate g.yaml --home ~/demo/.gatekeeper --apply   # own log
   python3 scripts/install_hooks.py --project ~/vault --gate ~/vault/gates/routing.yaml --apply
 
 The hooks obey the rulebook's `mode`: a fresh install in `shadow` mode only logs.
@@ -35,9 +36,12 @@ from gatekeeper.rulebook import identity  # noqa: E402
 PYTHON = sys.executable or "python3"
 
 
-def entries(gate: str) -> dict:
+def entries(gate: str, home: str | None = None) -> dict:
+    """`home` gives these hooks their own log and state folder (GATEKEEPER_HOME)."""
+    prefix = f"env GATEKEEPER_HOME={shlex.quote(home)} " if home else ""
+
     def cmd(kind):
-        command = f"{shlex.quote(PYTHON)} {shlex.quote(str(BIN))} hook {kind} --gate {shlex.quote(gate)}"
+        command = f"{prefix}{shlex.quote(PYTHON)} {shlex.quote(str(BIN))} hook {kind} --gate {shlex.quote(gate)}"
         return {"type": "command", "command": command, "timeout": 10}
 
     return {
@@ -65,12 +69,12 @@ def is_ours(hook: dict, gate: str) -> bool:
     return found is not None and (found == gate or identity(found) == identity(gate))
 
 
-def merge(settings: dict, gate: str, uninstall: bool) -> dict:
+def merge(settings: dict, gate: str, uninstall: bool, home: str | None = None) -> dict:
     """Remove only our hook entries (other tools' hooks in a shared group stay),
     then add ours once. A settings file that already has them is left unchanged."""
     out = json.loads(json.dumps(settings))
     hooks = out.setdefault("hooks", {})
-    for event, group in entries(gate).items():
+    for event, group in entries(gate, home).items():
         groups = hooks.get(event, [])
         if not uninstall and any(h == group["hooks"][0] for g in groups for h in g.get("hooks", [])):
             continue  # already installed exactly as we would install it
@@ -125,6 +129,7 @@ def main() -> int:
     where.add_argument("--global", dest="global_", action="store_true", help="~/.claude/settings.json")
     p.add_argument("--gate", default="agent-selection", help="gate name, or a path to a rulebook YAML")
     p.add_argument("--skill", action="store_true", help="also link ~/.claude/skills/gatekeeper to this repo")
+    p.add_argument("--home", help="separate log and state folder for these hooks (sets GATEKEEPER_HOME)")
     p.add_argument("--uninstall", action="store_true")
     p.add_argument("--apply", action="store_true", help="write the change (default: dry run)")
     args = p.parse_args()
@@ -141,7 +146,8 @@ def main() -> int:
 
     path = (Path("~/.claude") if args.global_ else Path(args.project).expanduser() / ".claude").expanduser() / "settings.json"
     before = json.loads(path.read_text()) if path.exists() else {}
-    after = merge(before, args.gate, args.uninstall)
+    home = str(Path(args.home).expanduser().resolve()) if args.home else None
+    after = merge(before, args.gate, args.uninstall, home)
     a, b = json.dumps(before, indent=2).splitlines(), json.dumps(after, indent=2).splitlines()
     diff = list(difflib.unified_diff(a, b, str(path), str(path), lineterm=""))
     if not diff:

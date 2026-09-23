@@ -122,6 +122,14 @@ def _settings_files(extra_projects) -> list[Path]:
     return out
 
 
+def _python_of(argv: list[str]) -> str:
+    """The interpreter of a hook command, past an `env NAME=value` prefix."""
+    rest = argv[1:] if argv and argv[0] == "env" else argv
+    while rest and "=" in rest[0] and not rest[0].startswith(("/", ".")):
+        rest = rest[1:]
+    return rest[0] if rest else "python3"
+
+
 def _interpreter_problem(python: str) -> str | None:
     """Can the hook's interpreter import gatekeeper's dependencies? A hook that
     cannot is skipped on every prompt, which looks exactly like a quiet gate."""
@@ -160,10 +168,12 @@ def check_hooks(book: dict, extra_projects=None) -> Check:
                     bins = [a for a in argv if a.endswith("bin/gatekeeper")]
                     if not Path(bins[0]).exists():
                         broken.append(f"{path}: {bins[0]} missing")
-                    elif argv[0] not in interpreters:
-                        interpreters[argv[0]] = _interpreter_problem(argv[0])
-                    if interpreters.get(argv[0]):
-                        broken.append(f"{path}: {interpreters[argv[0]]}")
+                    else:
+                        python = _python_of(argv)
+                        if python not in interpreters:
+                            interpreters[python] = _interpreter_problem(python)
+                        if interpreters[python]:
+                            broken.append(f"{path}: {interpreters[python]}")
         if events:
             missing = {"UserPromptSubmit", "PreToolUse"} - events
             found.append(f"{path.parent.parent if path.parent.name == '.claude' else path.parent}"

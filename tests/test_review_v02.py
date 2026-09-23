@@ -103,3 +103,21 @@ def test_old_state_files_are_pruned():
     store.save_verdict("new", {"gate": "demo", "kind": "allow"})
     assert not (state / "legacy-session.json").exists() and not old.exists()
     assert store.load_verdict("new", "demo") is not None
+
+
+
+def test_home_option_gives_hooks_their_own_log_and_stays_recognized(tmp_path):
+    home = str(tmp_path / "demo home")
+    merged = ih.merge({}, "marketing-team", uninstall=False, home=home)
+    hook = merged["hooks"]["UserPromptSubmit"][0]["hooks"][0]
+    assert hook["command"].startswith(f"env GATEKEEPER_HOME='{home}' ") and ih.is_ours(hook, "marketing-team")
+    assert doctor._python_of(ih.shlex.split(hook["command"])) == sys.executable
+    project = tmp_path / "proj"
+    (project / ".claude").mkdir(parents=True)
+    (project / ".claude" / "settings.json").write_text(json.dumps(merged))
+    assert doctor.check_hooks(rulebook.load("marketing-team"), [str(project)]).status == "ok"
+    env = {**os.environ}
+    env.pop("GATEKEEPER_HOME", None)
+    subprocess.run(["sh", "-c", hook["command"]], input='{"prompt": "hi", "session_id": "d"}', text=True, env=env, timeout=30)
+    assert list((tmp_path / "demo home" / "log").glob("*.jsonl"))
+    assert ih.merge(merged, "marketing-team", uninstall=True) == {}

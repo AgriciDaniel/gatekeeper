@@ -2,6 +2,7 @@
 
 ## 0.2.2 (2026-09-23)
 
+- `install_hooks.py --home DIR` gives a project's hooks their own log and state folder, so a demo or client project never writes into your main log. `doctor` understands the `env GATEKEEPER_HOME=...` prefix.
 - The key file is also found in `~/.config/gatekeeper/env` when `XDG_CONFIG_HOME` points elsewhere, as it does inside a Flatpak editor such as VS Code. Before, hooks in those sessions could not find the key and failed open.
 
 ## 0.2.1 (2026-09-23)
